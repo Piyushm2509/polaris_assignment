@@ -1,39 +1,64 @@
 {% extends 'base.html' %} {% block title %}Register User{% endblock %} {% block
 content %}
-<h1 class="text-3xl font-bold text-blue-600 mb-4">Register User</h1>
-<form
-  id="registerUserForm"
-  class="bg-white p-6 rounded-lg shadow-md max-w-md mx-auto"
->
-  <div class="mb-4">
-    <label for="name" class="block text-gray-700">Name</label>
-    <input
-      type="text"
-      id="name"
-      name="name"
-      class="w-full p-2 border rounded"
-      required
-    />
+<div class="flex items-center justify-center min-h-[80vh]">
+  <div class="w-full max-w-lg bg-white shadow-xl rounded-xl overflow-hidden">
+    <!-- Header -->
+    <div
+      class="bg-gradient-to-r from-blue-500 to-indigo-600 text-white text-center py-5"
+    >
+      <h2 class="text-2xl font-semibold">Register New User</h2>
+      <p class="text-sm opacity-90">Get started with your food journey</p>
+    </div>
+
+    <!-- Form -->
+    <form id="registerUserForm" class="px-8 py-6 space-y-6">
+      <div class="relative">
+        <input
+          type="text"
+          id="name"
+          name="name"
+          required
+          class="peer w-full border border-gray-300 rounded-lg px-3 pt-5 pb-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          placeholder=" "
+        />
+        <label
+          for="name"
+          class="absolute left-3 top-2 text-gray-500 text-sm transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-focus:top-2 peer-focus:text-sm peer-focus:text-blue-500"
+        >
+          Full Name
+        </label>
+      </div>
+
+      <div class="relative">
+        <input
+          type="text"
+          id="location"
+          name="location"
+          required
+          class="peer w-full border border-gray-300 rounded-lg px-3 pt-5 pb-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          placeholder=" "
+        />
+        <label
+          for="location"
+          class="absolute left-3 top-2 text-gray-500 text-sm transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-focus:top-2 peer-focus:text-sm peer-focus:text-blue-500"
+        >
+          Location (e.g., Downtown)
+        </label>
+      </div>
+
+      <button
+        type="submit"
+        class="w-full bg-blue-600 text-white font-semibold py-2 rounded-lg hover:bg-blue-700 transition duration-200"
+      >
+        Register User
+      </button>
+    </form>
+
+    <div id="result" class="px-8 pb-6 text-center text-sm font-medium"></div>
   </div>
-  <div class="mb-4">
-    <label for="location" class="block text-gray-700">Location</label>
-    <input
-      type="text"
-      id="location"
-      name="location"
-      class="w-full p-2 border rounded"
-      placeholder="e.g., Downtown"
-      required
-    />
-  </div>
-  <button
-    type="submit"
-    class="bg-blue-500 text-white p-2 rounded w-full hover:bg-blue-600"
-  >
-    Register
-  </button>
-</form>
-<div id="result" class="mt-4 text-center"></div>
+</div>
+
+<!-- Script -->
 <script>
   document
     .getElementById("registerUserForm")
@@ -42,6 +67,7 @@ content %}
       const name = document.getElementById("name").value;
       const location = document.getElementById("location").value;
       const resultDiv = document.getElementById("result");
+
       try {
         const response = await fetch("/register_user", {
           method: "POST",
@@ -49,13 +75,15 @@ content %}
           body: JSON.stringify({ name, location }),
         });
         const data = await response.json();
+
         if (response.ok) {
-          resultDiv.innerHTML = `<p class="text-green-600">User registered! ID: ${data.user_id}</p>`;
+          resultDiv.innerHTML = `<p class="text-green-600">✅ Registered! User ID: ${data.user_id}</p>`;
+          e.target.reset();
         } else {
-          resultDiv.innerHTML = `<p class="text-red-600">Error: ${data.error}</p>`;
+          resultDiv.innerHTML = `<p class="text-red-600">❌ Error: ${data.error}</p>`;
         }
-      } catch (error) {
-        resultDiv.innerHTML = `<p class="text-red-600">Error: ${error.message}</p>`;
+      } catch (err) {
+        resultDiv.innerHTML = `<p class="text-red-600">❌ Error: ${err.message}</p>`;
       }
     });
 </script>

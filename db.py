@@ -28,8 +28,13 @@ def init_db():
             # Optional: enable column access by name
             conn.row_factory = sqlite3.Row
 
-            # Drop old restaurants table if exists (to remove food_type)
+            # Drop old tables if they exist
+            cursor.execute('DROP TABLE IF EXISTS users')
+            cursor.execute('DROP TABLE IF EXISTS riders')
             cursor.execute('DROP TABLE IF EXISTS restaurants')
+            cursor.execute('DROP TABLE IF EXISTS menus')
+            cursor.execute('DROP TABLE IF EXISTS orders')
+            cursor.execute('DROP TABLE IF EXISTS notifications')
 
             # Create users table
             cursor.execute('''
@@ -50,7 +55,7 @@ def init_db():
                 )
             ''')
 
-            # Create updated restaurants table
+            # Create restaurants table with additional fields (food_type, prep_time)
             cursor.execute('''
                 CREATE TABLE IF NOT EXISTS restaurants (
                     restaurant_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -61,7 +66,7 @@ def init_db():
                 )
             ''')
 
-            # Create menus table
+            # Create menus table (linked to restaurants)
             cursor.execute('''
                 CREATE TABLE IF NOT EXISTS menus (
                     menu_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -72,7 +77,7 @@ def init_db():
                 )
             ''')
 
-            # Create orders table
+            # Create orders table (linked to users, restaurants, and riders)
             cursor.execute('''
                 CREATE TABLE IF NOT EXISTS orders (
                     order_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -89,7 +94,7 @@ def init_db():
                 )
             ''')
 
-            # Create notifications table
+            # Create notifications table (linked to users and orders)
             cursor.execute('''
                 CREATE TABLE IF NOT EXISTS notifications (
                     notification_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -102,7 +107,7 @@ def init_db():
                 )
             ''')
 
-            # Create indexes for performance
+            # Create indexes for performance improvement
             cursor.execute('CREATE INDEX IF NOT EXISTS idx_orders_user_id ON orders (user_id)')
             cursor.execute('CREATE INDEX IF NOT EXISTS idx_orders_rider_id ON orders (rider_id)')
             cursor.execute('CREATE INDEX IF NOT EXISTS idx_menus_restaurant_id ON menus (restaurant_id)')

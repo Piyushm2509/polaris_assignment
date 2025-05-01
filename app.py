@@ -79,5 +79,17 @@ def completed_orders_page():
     """Render the completed orders page."""
     return render_template('completed_orders.html')
 
+@app.route('/users')
+def all_users_page():
+    return render_template('users.html')
+
+@app.route('/riders')
+def all_riders_page():
+    return render_template('riders.html')
+
+@app.route('/restaurants')
+def all_restaurants_page():
+    return render_template('restaurants.html')
+
 if __name__ == '__main__':
     app.run(debug=True)

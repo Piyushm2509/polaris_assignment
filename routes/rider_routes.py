@@ -1,62 +1,43 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, render_template
 from models.rider import Rider
 from models.order import Order
 from utils import format_order_details
 import logging
 from models.restaurant import Restaurant
+from db import db_cursor
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
+# Define the Blueprint for rider-related routes
 rider_routes = Blueprint('rider_routes', __name__)
 
+# Route to register a new rider
 @rider_routes.route('/register_rider', methods=['POST'])
 def register_rider():
-    """
-    Register a new rider.
-    
-    Request Body:
-        - name (str): Rider's name
-        - location (str): Rider's location (e.g., 'Downtown')
-    
-    Returns:
-        JSON: Rider ID and success message, or error message
-    """
     try:
-        logger.debug("Received request to register rider")
+        # Get data from the request
         data = request.get_json()
-        logger.debug(f"Request JSON: {data}")
-        
-        if not data or 'name' not in data or 'location' not in data:
-            logger.warning("Missing name or location in request")
-            return jsonify({"error": "Name and location are required"}), 400
-            
-        rider = Rider.register(data['name'], data['location'])
-        logger.info(f"Rider registered successfully: ID={rider.rider_id}")
-        return jsonify({
-            "rider_id": rider.rider_id,
-            "message": "Rider registered successfully"
-        }), 201
-    except ValueError as e:
-        logger.error(f"ValueError in register_rider: {str(e)}")
-        return jsonify({"error": str(e)}), 400
-    except Exception as e:
-        logger.error(f"Unexpected error in register_rider: {str(e)}", exc_info=True)
-        return jsonify({"error": "Internal server error"}), 500
+        name = data.get('name')
+        location = data.get('location')
 
+        if not name or not location:
+            return jsonify({"error": "Name and location are required!"}), 400
+
+        # Insert the new rider into the database
+        with db_cursor() as cursor:
+            cursor.execute('''INSERT INTO riders (name, location) VALUES (?, ?)''', (name, location))
+            rider_id = cursor.lastrowid
+
+        return jsonify({"message": "Rider registered!", "rider_id": rider_id})
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+# Route to update rider's location
 @rider_routes.route('/update_rider_location', methods=['PUT'])
 def update_rider_location():
-    """
-    Update a rider's location.
-    
-    Request Body:
-        - rider_id (int): Rider's ID
-        - location (str): New location
-    
-    Returns:
-        JSON: Success or error message
-    """
     try:
         logger.debug("Received request to update rider location")
         data = request.get_json()
@@ -75,24 +56,13 @@ def update_rider_location():
         else:
             logger.warning(f"Rider not found: ID={rider_id}")
             return jsonify({"error": "Rider not found"}), 404
-    except ValueError as e:
-        logger.error(f"ValueError in update_rider_location: {str(e)}")
-        return jsonify({"error": str(e)}), 400
     except Exception as e:
         logger.error(f"Unexpected error in update_rider_location: {str(e)}", exc_info=True)
         return jsonify({"error": "Internal server error"}), 500
 
+# Route to fetch orders for a rider
 @rider_routes.route('/rider/<int:rider_id>/orders', methods=['GET'])
 def get_rider_orders(rider_id):
-    """
-    Fetch order history for a rider.
-    
-    Path Parameters:
-        - rider_id (int): Rider's ID
-    
-    Returns:
-        JSON: List of rider's orders with details
-    """
     try:
         logger.debug(f"Fetching orders for rider_id={rider_id}")
         rider = Rider.get_by_id(rider_id)
@@ -122,3 +92,23 @@ def get_rider_orders(rider_id):
     except Exception as e:
         logger.error(f"Unexpected error in get_rider_orders: {str(e)}", exc_info=True)
         return jsonify({"error": "Internal server error"}), 500
+
+# Route to display all riders
+@rider_routes.route('/riders')
+def get_all_riders():
+    try:
+        # Fetch all riders from the database
+        with db_cursor() as cursor:
+            cursor.execute("SELECT * FROM riders")
+            riders = cursor.fetchall()
+
+        # If no riders are found, return an error message
+        if not riders:
+            return render_template('riders.html', error="No riders found.")
+
+        # Render the riders page with rider data
+        return render_template('riders.html', riders=riders)
+
+    except Exception as e:
+        print(f"Error: {e}")
+        return render_template('riders.html', error="Error loading riders.")

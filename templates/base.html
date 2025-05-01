@@ -13,38 +13,93 @@
     />
   </head>
   <body class="bg-gray-100 font-sans">
-    <!-- Navigation Bar -->
-    <nav class="bg-blue-600 text-white p-4">
+    <!-- Top Navbar -->
+    <nav class="bg-blue-600 text-white p-4 shadow-md">
       <div class="container mx-auto flex justify-between items-center">
-        <a href="/" class="text-2xl font-bold">Food Delivery</a>
-        <div class="space-x-4">
-          <a href="/register_user" class="hover:underline">Register User</a>
-          <a href="/register_rider" class="hover:underline">Register Rider</a>
-          <a href="/register_restaurant" class="hover:underline"
-            >Register Restaurant</a
-          >
-          <a href="/suggest_restaurants" class="hover:underline"
-            >Suggest Restaurants</a
-          >
-          <a href="/view_menu" class="hover:underline">View Menu</a>
-          <a href="/place_order" class="hover:underline">Place Order</a>
-          <a href="/assign_rider" class="hover:underline">Assign Rider</a>
-          <a href="/update_rider_location" class="hover:underline"
-            >Update Rider Location</a
-          >
-          <a href="/user_orders" class="hover:underline">User Orders</a>
-          <a href="/rider_orders" class="hover:underline">Rider Orders</a>
-          <a href="/completed_orders" class="hover:underline"
-            >Completed Orders</a
-          >
-        </div>
+        <a href="/" class="text-2xl font-bold">🍽️ Food Delivery</a>
       </div>
     </nav>
+
+    <!-- Page-wide Navigation Buttons -->
+    <div class="container mx-auto mt-4 px-4">
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <a
+          href="/register_user"
+          class="bg-white text-blue-600 border border-blue-600 p-2 rounded-lg shadow hover:bg-blue-600 hover:text-white text-center transition"
+          >Register User</a
+        >
+        <a
+          href="/register_rider"
+          class="bg-white text-blue-600 border border-blue-600 p-2 rounded-lg shadow hover:bg-blue-600 hover:text-white text-center transition"
+          >Register Rider</a
+        >
+        <a
+          href="/register_restaurant"
+          class="bg-white text-blue-600 border border-blue-600 p-2 rounded-lg shadow hover:bg-blue-600 hover:text-white text-center transition"
+          >Register Restaurant</a
+        >
+        <a
+          href="/suggest_restaurants"
+          class="bg-white text-blue-600 border border-blue-600 p-2 rounded-lg shadow hover:bg-blue-600 hover:text-white text-center transition"
+          >Suggest Restaurants</a
+        >
+        <a
+          href="/view_menu"
+          class="bg-white text-blue-600 border border-blue-600 p-2 rounded-lg shadow hover:bg-blue-600 hover:text-white text-center transition"
+          >View Menu</a
+        >
+        <a
+          href="/place_order"
+          class="bg-white text-blue-600 border border-blue-600 p-2 rounded-lg shadow hover:bg-blue-600 hover:text-white text-center transition"
+          >Place Order</a
+        >
+        <a
+          href="/assign_rider"
+          class="bg-white text-blue-600 border border-blue-600 p-2 rounded-lg shadow hover:bg-blue-600 hover:text-white text-center transition"
+          >Assign Rider</a
+        >
+        <a
+          href="/update_rider_location"
+          class="bg-white text-blue-600 border border-blue-600 p-2 rounded-lg shadow hover:bg-blue-600 hover:text-white text-center transition"
+          >Update Rider Location</a
+        >
+        <a
+          href="/user_orders"
+          class="bg-white text-blue-600 border border-blue-600 p-2 rounded-lg shadow hover:bg-blue-600 hover:text-white text-center transition"
+          >User Orders</a
+        >
+        <a
+          href="/rider_orders"
+          class="bg-white text-blue-600 border border-blue-600 p-2 rounded-lg shadow hover:bg-blue-600 hover:text-white text-center transition"
+          >Rider Orders</a
+        >
+        <a
+          href="/completed_orders"
+          class="bg-white text-blue-600 border border-blue-600 p-2 rounded-lg shadow hover:bg-blue-600 hover:text-white text-center transition"
+          >Completed Orders</a
+        >
+        <a
+          href="/users"
+          class="bg-white text-blue-600 border border-blue-600 p-2 rounded-lg shadow hover:bg-blue-600 hover:text-white text-center transition"
+          >Users</a
+        >
+        <a
+          href="/riders"
+          class="bg-white text-blue-600 border border-blue-600 p-2 rounded-lg shadow hover:bg-blue-600 hover:text-white text-center transition"
+          >Rider</a
+        >
+        <a
+          href="/restaurants"
+          class="bg-white text-blue-600 border border-blue-600 p-2 rounded-lg shadow hover:bg-blue-600 hover:text-white text-center transition"
+          >Restaurants</a
+        >
+      </div>
+    </div>
 
     <!-- Main Content -->
     <div class="container mx-auto p-6">{% block content %} {% endblock %}</div>
 
-    <!-- JavaScript -->
+    <!-- JS -->
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
   </body>
 </html>

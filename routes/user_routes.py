@@ -1,10 +1,11 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, render_template
 from models.user import User
 from models.order import Order
 from utils import format_order_details
 import logging
 from models.restaurant import Restaurant
-
+from models.user import User
+from db import db_cursor
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
@@ -85,3 +86,22 @@ def get_user_orders(user_id):
     except Exception as e:
         logger.error(f"Unexpected error in get_user_orders: {str(e)}", exc_info=True)
         return jsonify({"error": "Internal server error"}), 500
+    
+@user_routes.route('/users')
+def get_all_users():
+    try:
+        # Fetch all users from the database
+        with db_cursor() as cursor:
+            cursor.execute("SELECT * FROM users")
+            users = cursor.fetchall()  # Fetch all rows as a list of dictionaries
+
+        # If no users are found, return an error message
+        if not users:
+            return render_template('users.html', error="No users found.")
+
+        # Render the users page with user data
+        return render_template('users.html', users=users)
+
+    except Exception as e:
+        print(f"Error: {e}")
+        return render_template('users.html', error="Error loading users.")

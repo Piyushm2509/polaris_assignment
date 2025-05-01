@@ -1,6 +1,7 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify,render_template
 from models.restaurant import Restaurant
-
+from models.restaurant import Restaurant  # ensure this is imported
+from db import db_cursor
 restaurant_routes = Blueprint('restaurant_routes', __name__)
 
 @restaurant_routes.route('/register_restaurant', methods=['POST'])
@@ -92,3 +93,24 @@ def get_menu(restaurant_id):
         }), 200
     except Exception as e:
         return jsonify({"error": "Internal server error"}), 500
+
+
+# Route to display all restaurants
+@restaurant_routes.route('/restaurants')
+def get_all_restaurants():
+    try:
+        # Fetch all restaurants from the database
+        with db_cursor() as cursor:
+            cursor.execute("SELECT * FROM restaurants")
+            restaurants = cursor.fetchall()
+
+        # If no restaurants are found, return an error message
+        if not restaurants:
+            return render_template('restaurant.html', error="No restaurants found.")
+
+        # Render the restaurants page with restaurant data
+        return render_template('restaurant.html', restaurants=restaurants)
+
+    except Exception as e:
+        print(f"Error: {e}")
+        return render_template('restaurant.html', error="Error loading restaurants.")
