@@ -1,0 +1,94 @@
+{% extends 'base.html' %} {% block title %}Suggest Restaurants{% endblock %} {%
+block content %}
+<h1 class="text-3xl font-bold text-blue-600 mb-4">Suggest Restaurants</h1>
+<form
+  id="suggestRestaurantsForm"
+  class="bg-white p-6 rounded-lg shadow-md max-w-md mx-auto"
+>
+  <div class="mb-4">
+    <label for="user_location" class="block text-gray-700">Your Location</label>
+    <input
+      type="text"
+      id="user_location"
+      name="user_location"
+      class="w-full p-2 border rounded"
+      placeholder="e.g., Downtown"
+      required
+    />
+  </div>
+  <div class="mb-4">
+    <label for="food_type" class="block text-gray-700">Food Type</label>
+    <input
+      type="text"
+      id="food_type"
+      name="food_type"
+      class="w-full p-2 border rounded"
+      placeholder="e.g., Italian"
+      required
+    />
+  </div>
+  <div class="mb-4">
+    <label for="max_delivery_time" class="block text-gray-700"
+      >Max Delivery Time (minutes)</label
+    >
+    <input
+      type="number"
+      id="max_delivery_time"
+      name="max_delivery_time"
+      class="w-full p-2 border rounded"
+      value="30"
+      required
+    />
+  </div>
+  <button
+    type="submit"
+    class="bg-blue-500 text-white p-2 rounded w-full hover:bg-blue-600"
+  >
+    Find Restaurants
+  </button>
+</form>
+<div id="result" class="mt-4"></div>
+<script>
+  document
+    .getElementById("suggestRestaurantsForm")
+    .addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const user_location = document.getElementById("user_location").value;
+      const food_type = document.getElementById("food_type").value;
+      const max_delivery_time = parseInt(
+        document.getElementById("max_delivery_time").value
+      );
+      const resultDiv = document.getElementById("result");
+      try {
+        const response = await fetch("/suggest_restaurants", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ user_location, food_type, max_delivery_time }),
+        });
+        const data = await response.json();
+        if (response.ok) {
+          const restaurants = data.restaurants;
+          if (restaurants.length === 0) {
+            resultDiv.innerHTML =
+              '<p class="text-gray-600">No restaurants found.</p>';
+          } else {
+            resultDiv.innerHTML =
+              '<h2 class="text-2xl font-semibold mb-2">Suggested Restaurants</h2>';
+            restaurants.forEach((r) => {
+              resultDiv.innerHTML += `
+                            <div class="bg-white p-4 rounded-lg shadow-md mb-2">
+                                <p><strong>${r.name}</strong> (${r.location})</p>
+                                <p>Estimated Delivery: ${r.estimated_delivery_time} min</p>
+                                <p>ID: ${r.restaurant_id}</p>
+                            </div>`;
+            });
+          }
+        } else {
+          resultDiv.innerHTML = `<p class="text-red-600">Error: ${data.error}</p>`;
+        }
+      } catch (error) {
+        resultDiv.innerHTML = `<p class="text-red-600">Error: ${error.message}</p>`;
+      }
+    });
+</script>
+{% endblock %}

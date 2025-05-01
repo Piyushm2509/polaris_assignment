@@ -1,0 +1,94 @@
+from flask import Blueprint, request, jsonify
+from models.restaurant import Restaurant
+
+restaurant_routes = Blueprint('restaurant_routes', __name__)
+
+@restaurant_routes.route('/register_restaurant', methods=['POST'])
+def register_restaurant():
+    """
+    Register a new restaurant.
+    
+    Request Body:
+        - name (str): Restaurant's name
+        - location (str): Restaurant's location (e.g., 'Downtown')
+        - food_type (str): Type of cuisine (e.g., 'Italian')
+        - prep_time (int, optional): Food preparation time in minutes (default: 10)
+        - menu_items (list, optional): List of menu items, each as a dict with 'item_name' and 'price'
+    
+    Returns:
+        JSON: Restaurant ID and success message, or error message
+    """
+    try:
+        data = request.get_json()
+        if not data or 'name' not in data or 'location' not in data or 'food_type' not in data:
+            return jsonify({"error": "Name, location, and food type are required"}), 400
+        
+        prep_time = data.get('prep_time', 10)
+        menu_items = data.get('menu_items', [])
+        
+        if menu_items and (not isinstance(menu_items, list) or not all('item_name' in item and 'price' in item for item in menu_items)):
+            return jsonify({"error": "Menu items must be a list of dicts with 'item_name' and 'price'"}), 400
+
+        # Register the restaurant along with its menu items
+        restaurant = Restaurant.register(data['name'], data['location'], data['food_type'], prep_time, menu_items)
+        
+        return jsonify({
+            "restaurant_id": restaurant.restaurant_id,
+            "message": "Restaurant registered successfully"
+        }), 201
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
+    except Exception as e:
+        return jsonify({"error": "Internal server error"}), 500
+@restaurant_routes.route('/add_menu_item', methods=['POST'])
+def add_menu_item():
+    """
+    Add a menu item to a restaurant.
+    
+    Request Body:
+        - restaurant_id (int): Restaurant's ID
+        - item_name (str): Name of the menu item
+        - price (float): Price of the item
+    
+    Returns:
+        JSON: Success message or error message
+    """
+    try:
+        data = request.get_json()
+        if not data or 'restaurant_id' not in data or 'item_name' not in data or 'price' not in data:
+            return jsonify({"error": "Restaurant ID, item name, and price are required"}), 400
+            
+        success = Restaurant.add_menu_item(data['restaurant_id'], data['item_name'], data['price'])
+        if not success:
+            return jsonify({"error": "Restaurant not found"}), 404
+            
+        return jsonify({"message": "Menu item added successfully"}), 201
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
+    except Exception as e:
+        return jsonify({"error": "Internal server error"}), 500
+
+@restaurant_routes.route('/menu/<int:restaurant_id>', methods=['GET'])
+def get_menu(restaurant_id):
+    """
+    Fetch the menu for a restaurant.
+    
+    Path Parameters:
+        - restaurant_id (int): Restaurant's ID
+    
+    Returns:
+        JSON: List of menu items with details
+    """
+    try:
+        restaurant = Restaurant.get_by_id(restaurant_id)
+        if not restaurant:
+            return jsonify({"error": "Restaurant not found"}), 404
+            
+        menu = Restaurant.get_menu(restaurant_id)
+        return jsonify({
+            "restaurant_id": restaurant_id,
+            "restaurant_name": restaurant.name,
+            "menu": menu
+        }), 200
+    except Exception as e:
+        return jsonify({"error": "Internal server error"}), 500

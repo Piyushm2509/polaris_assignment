@@ -1,0 +1,62 @@
+{% extends 'base.html' %} {% block title %}Register User{% endblock %} {% block
+content %}
+<h1 class="text-3xl font-bold text-blue-600 mb-4">Register User</h1>
+<form
+  id="registerUserForm"
+  class="bg-white p-6 rounded-lg shadow-md max-w-md mx-auto"
+>
+  <div class="mb-4">
+    <label for="name" class="block text-gray-700">Name</label>
+    <input
+      type="text"
+      id="name"
+      name="name"
+      class="w-full p-2 border rounded"
+      required
+    />
+  </div>
+  <div class="mb-4">
+    <label for="location" class="block text-gray-700">Location</label>
+    <input
+      type="text"
+      id="location"
+      name="location"
+      class="w-full p-2 border rounded"
+      placeholder="e.g., Downtown"
+      required
+    />
+  </div>
+  <button
+    type="submit"
+    class="bg-blue-500 text-white p-2 rounded w-full hover:bg-blue-600"
+  >
+    Register
+  </button>
+</form>
+<div id="result" class="mt-4 text-center"></div>
+<script>
+  document
+    .getElementById("registerUserForm")
+    .addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const name = document.getElementById("name").value;
+      const location = document.getElementById("location").value;
+      const resultDiv = document.getElementById("result");
+      try {
+        const response = await fetch("/register_user", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, location }),
+        });
+        const data = await response.json();
+        if (response.ok) {
+          resultDiv.innerHTML = `<p class="text-green-600">User registered! ID: ${data.user_id}</p>`;
+        } else {
+          resultDiv.innerHTML = `<p class="text-red-600">Error: ${data.error}</p>`;
+        }
+      } catch (error) {
+        resultDiv.innerHTML = `<p class="text-red-600">Error: ${error.message}</p>`;
+      }
+    });
+</script>
+{% endblock %}

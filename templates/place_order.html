@@ -1,0 +1,94 @@
+{% extends 'base.html' %} {% block title %}Place Order{% endblock %} {% block
+content %}
+<h1 class="text-3xl font-bold text-blue-600 mb-4">Place Order</h1>
+<form
+  id="placeOrderForm"
+  class="bg-white p-6 rounded-lg shadow-md max-w-md mx-auto"
+>
+  <div class="mb-4">
+    <label for="user_id" class="block text-gray-700">User ID</label>
+    <input
+      type="number"
+      id="user_id"
+      name="user_id"
+      class="w-full p-2 border rounded"
+      required
+    />
+  </div>
+  <div class="mb-4">
+    <label for="restaurant_id" class="block text-gray-700">Restaurant ID</label>
+    <input
+      type="number"
+      id="restaurant_id"
+      name="restaurant_id"
+      class="w-full p-2 border rounded"
+      required
+    />
+  </div>
+  <div class="mb-4">
+    <label for="item_ids" class="block text-gray-700"
+      >Menu Item IDs (comma-separated)</label
+    >
+    <input
+      type="text"
+      id="item_ids"
+      name="item_ids"
+      class="w-full p-2 border rounded"
+      placeholder="e.g., 1,2"
+      required
+    />
+  </div>
+  <button
+    type="submit"
+    class="bg-blue-500 text-white p-2 rounded w-full hover:bg-blue-600"
+  >
+    Place Order
+  </button>
+</form>
+<div id="result" class="mt-4"></div>
+<script>
+  document
+    .getElementById("placeOrderForm")
+    .addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const user_id = parseInt(document.getElementById("user_id").value);
+      const restaurant_id = parseInt(
+        document.getElementById("restaurant_id").value
+      );
+      const item_ids = document
+        .getElementById("item_ids")
+        .value.split(",")
+        .map((id) => parseInt(id.trim()));
+      const resultDiv = document.getElementById("result");
+      try {
+        const response = await fetch("/place_order", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ user_id, restaurant_id, item_ids }),
+        });
+        const data = await response.json();
+        if (response.ok) {
+          const order = data.order;
+          resultDiv.innerHTML = `
+                    <div class="bg-white p-4 rounded-lg shadow-md">
+                        <h2 class="text-2xl font-semibold mb-2">Order Placed</h2>
+                        <p><strong>Order ID:</strong> ${order.order_id}</p>
+                        <p><strong>Restaurant:</strong> ${
+                          order.restaurant_name
+                        }</p>
+                        <p><strong>Items:</strong> ${order.items}</p>
+                        <p><strong>Total Price:</strong> $${order.total_price.toFixed(
+                          2
+                        )}</p>
+                        <p><strong>Status:</strong> ${order.status}</p>
+                        <p><strong>Rider:</strong> ${order.rider_status}</p>
+                    </div>`;
+        } else {
+          resultDiv.innerHTML = `<p class="text-red-600">Error: ${data.error}</p>`;
+        }
+      } catch (error) {
+        resultDiv.innerHTML = `<p class="text-red-600">Error: ${error.message}</p>`;
+      }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Food Delivery App{% endblock %}</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Custom CSS -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/styles.css') }}"
+    />
+  </head>
+  <body class="bg-gray-100 font-sans">
+    <!-- Navigation Bar -->
+    <nav class="bg-blue-600 text-white p-4">
+      <div class="container mx-auto flex justify-between items-center">
+        <a href="/" class="text-2xl font-bold">Food Delivery</a>
+        <div class="space-x-4">
+          <a href="/register_user" class="hover:underline">Register User</a>
+          <a href="/register_rider" class="hover:underline">Register Rider</a>
+          <a href="/register_restaurant" class="hover:underline"
+            >Register Restaurant</a
+          >
+          <a href="/suggest_restaurants" class="hover:underline"
+            >Suggest Restaurants</a
+          >
+          <a href="/view_menu" class="hover:underline">View Menu</a>
+          <a href="/place_order" class="hover:underline">Place Order</a>
+          <a href="/assign_rider" class="hover:underline">Assign Rider</a>
+          <a href="/update_rider_location" class="hover:underline"
+            >Update Rider Location</a
+          >
+          <a href="/user_orders" class="hover:underline">User Orders</a>
+          <a href="/rider_orders" class="hover:underline">Rider Orders</a>
+          <a href="/completed_orders" class="hover:underline"
+            >Completed Orders</a
+          >
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mx-auto p-6">{% block content %} {% endblock %}</div>
+
+    <!-- JavaScript -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  </body>
+</html>
