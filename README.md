@@ -180,3 +180,4 @@ Redundancy: Deploy the application across multiple regions with failover mechani
 5. Conclusion
    The food delivery backend meets all mandatory requirements with a modular, extensible design. The Flask-based API and SQLite database provide a functional prototype, while the CLI interface ensures easy testing. Assumptions like text-based locations and mock distances simplify development but are addressed with production-ready scalability recommendations. The low-level design emphasizes efficiency with indexes and clear separation of concerns. For production, adopting PostgreSQL, caching, and geospatial queries will ensure the system handles millions of users and restaurants effectively.
 "# polaris_assignment" 
+"# polaris_assigmnet" 
